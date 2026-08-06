@@ -27,6 +27,7 @@ model User {
   createdAdmins  User[]   @relation("AdminCreator")
   createdBy      User?    @relation("AdminCreator", fields: [createdById], references: [id])
   createdById    String?
+  notifications Notification[]
 
   @@index([role, isActive])
 }
@@ -76,4 +77,16 @@ model ActivityCompletion {
 
   @@unique([childId, activityId])
   @@index([childId, completedAt])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  parentId  String
+  title     String
+  message   String
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+  parent    User     @relation(fields: [parentId], references: [id], onDelete: Cascade)
+
+  @@index([parentId, readAt, createdAt])
 }

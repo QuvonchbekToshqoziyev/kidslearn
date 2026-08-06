@@ -45,6 +45,8 @@ export class ActivityController {
     if (!activity) throw new UnauthorizedException('Activity is not available');
     const stars = body.score >= 90 ? 3 : body.score >= 70 ? 2 : body.score >= 50 ? 1 : 0;
     const medal = stars === 3 ? 'GOLD' : stars === 2 ? 'SILVER' : stars === 1 ? 'BRONZE' : null;
-    return this.prisma.activityCompletion.upsert({ where: { childId_activityId: { childId: child.id, activityId: id } }, update: { score: body.score, stars, medal, completedAt: new Date() }, create: { childId: child.id, activityId: id, score: body.score, stars, medal } });
+    const completion = await this.prisma.activityCompletion.upsert({ where: { childId_activityId: { childId: child.id, activityId: id } }, update: { score: body.score, stars, medal, completedAt: new Date() }, create: { childId: child.id, activityId: id, score: body.score, stars, medal } });
+    await this.prisma.notification.create({ data: { parentId: child.parentId, title: 'Yangi mukofot', message: `${child.name} “${activity.title}” faoliyatini tugatdi.` } });
+    return completion;
   }
 }

@@ -22,4 +22,8 @@ export class ParentController {
     if (!child) throw new UnauthorizedException('Child does not belong to this parent');
     return { child: { id: child.id, name: child.name }, completedActivities: child.completions.length, points: child.completions.reduce((sum, item) => sum + item.score, 0), stars: child.completions.reduce((sum, item) => sum + item.stars, 0), recent: child.completions.slice(0, 10) };
   }
+  @Get('notifications') notifications(@Req() req: { user: { id: string; role: Role } }) {
+    if (req.user.role !== Role.PARENT) throw new UnauthorizedException();
+    return this.prisma.notification.findMany({ where: { parentId: req.user.id }, orderBy: { createdAt: 'desc' }, take: 30 });
+  }
 }

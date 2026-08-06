@@ -1,0 +1,11 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: kidslearn
+      POSTGRES_PASSWORD: kidslearn
+      POSTGRES_DB: kidslearn
+    ports: ["5432:5432"]
+    volumes: [kidslearn-postgres:/var/lib/postgresql/data]
+volumes:
+  kidslearn-postgres:
