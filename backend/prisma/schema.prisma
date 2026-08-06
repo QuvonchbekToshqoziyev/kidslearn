@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPERADMIN
+  ADMIN
+  PARENT
+  CHILD
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  passwordHash   String
+  name           String
+  role           Role
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  children       Child[]  @relation("ParentChildren")
+  createdAdmins  User[]   @relation("AdminCreator")
+  createdBy      User?    @relation("AdminCreator", fields: [createdById], references: [id])
+  createdById    String?
+
+  @@index([role, isActive])
+}
+
+model Child {
+  id          String   @id @default(cuid())
+  name        String
+  birthDate   DateTime
+  avatarUrl   String?
+  parentId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  parent      User     @relation("ParentChildren", fields: [parentId], references: [id], onDelete: Cascade)
+
+  @@index([parentId])
+}
