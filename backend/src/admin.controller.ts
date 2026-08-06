@@ -23,4 +23,9 @@ export class AdminController {
     if (req.user.role !== Role.SUPERADMIN && req.user.role !== Role.ADMIN) throw new UnauthorizedException();
     return this.prisma.user.findMany({ where: { role: Role.PARENT }, select: { id: true, name: true, email: true, isActive: true, createdAt: true }, orderBy: { createdAt: 'desc' } });
   }
+  @Post('parents') async createParent(@Req() req: { user: { role: Role } }, @Body() body: CreateAdminDto) {
+    if (req.user.role !== Role.SUPERADMIN && req.user.role !== Role.ADMIN) throw new UnauthorizedException();
+    const passwordHash = await (await import('bcryptjs')).hash(body.password, 12);
+    return this.prisma.user.create({ data: { name: body.name, email: body.email.toLowerCase(), passwordHash, role: Role.PARENT }, select: { id: true, name: true, email: true, role: true, isActive: true, createdAt: true } });
+  }
 }

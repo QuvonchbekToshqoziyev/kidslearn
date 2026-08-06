@@ -40,6 +40,40 @@ model Child {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   parent      User     @relation("ParentChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  completions  ActivityCompletion[]
 
   @@index([parentId])
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  type        String
+  subject     String
+  ageMin      Int
+  ageMax      Int
+  coverUrl    String?
+  content     Json
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  completions ActivityCompletion[]
+
+  @@index([published, ageMin, ageMax])
+}
+
+model ActivityCompletion {
+  id         String   @id @default(cuid())
+  childId    String
+  activityId String
+  score      Int      @default(0)
+  stars      Int      @default(0)
+  medal      String?
+  completedAt DateTime @default(now())
+  child      Child   @relation(fields: [childId], references: [id], onDelete: Cascade)
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@unique([childId, activityId])
+  @@index([childId, completedAt])
 }
