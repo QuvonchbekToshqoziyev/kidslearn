@@ -5,4 +5,6 @@ backend/dist/
 .env.*
 !.env.example
 coverage/
+frontend/test-results/
+frontend/tsconfig.tsbuildinfo
 .DS_Store
