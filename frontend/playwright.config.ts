@@ -1,0 +1,2 @@
+import { defineConfig, devices } from '@playwright/test';
+export default defineConfig({ testDir: './tests', use: { baseURL: 'http://127.0.0.1:4173', trace: 'retain-on-failure', launchOptions: { executablePath: '/usr/bin/google-chrome', args: ['--no-sandbox'] } }, webServer: { command: 'npm run dev -- --host 127.0.0.1 --port 4173', port: 4173, reuseExistingServer: true }, projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }, { name: 'mobile', use: { ...devices['Pixel 5'] } }] });
